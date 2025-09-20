@@ -1,0 +1,17 @@
+# Ignore data files
+data/
+givendataset/
+extracted_texts/
+
+# Ignore Excel/PPT temp & binary files
+*.xlsx
+*.csv
+*.pptx
+~$*
+
+# Ignore PDFs
+*.pdf
+
+# Python cache
+__pycache__/
+*.pyc
