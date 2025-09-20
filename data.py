@@ -1,103 +1,97 @@
-# market_analysis.py
 
 # ==============================================================================
-# Part 1: Data Acquisition
-# Fetches scientific article data from the PubMed API.
+# market_analysis.py
+# Robust PubMed Data Acquisition & Cleaning Script with Retry & Batching
 # ==============================================================================
+
 import pandas as pd
 from Bio import Entrez
+import spacy
+import time
+from http.client import IncompleteRead
 
-print("Starting Part 1: Data Acquisition from PubMed...")
+print("Step 1: Searching PubMed and Fetching Articles")
 
-# Always provide your email to the NCBI APIs
-Entrez.email = "your.email@example.com" 
+# Always provide your email to NCBI
+Entrez.email = "your.email@example.com"
 
-# Define the search query for PubMed
+# Set your search keywords here
 search_query = "obesity India prevalence"
 
-# Use Entrez esearch to get a list of article IDs (PMIDs) that match the query
-# retmax="100" limits the results to the first 100 articles
-handle = Entrez.esearch(db="pubmed", term=search_query, retmax="100")
-record = Entrez.read(handle)
-handle.close()
-id_list = record["IdList"]
+# Search PubMed articles - get up to 100 PMIDs
+search_handle = Entrez.esearch(db="pubmed", term=search_query, retmax=100)
+search_record = Entrez.read(search_handle)
+search_handle.close()
+id_list = search_record["IdList"]
 
-# Use Entrez efetch to retrieve the full records for those IDs in XML format
-handle = Entrez.efetch(db="pubmed", id=id_list, rettype="xml", retmode="text")
-records = Entrez.read(handle)
-handle.close()
+print(f"Found {len(id_list)} articles matching query.")
 
-# Parse the XML to extract the title and abstract for each article
+# Function to fetch articles in batches with retry on failures
+def fetch_pubmed_records(ids, batch_size=20, max_retries=3):
+    all_records = []
+    for start in range(0, len(ids), batch_size):
+        batch_ids = ids[start:start+batch_size]
+        retry = 0
+        while retry < max_retries:
+            try:
+                handle = Entrez.efetch(db="pubmed", id=batch_ids, rettype="xml", retmode="text")
+                records = Entrez.read(handle)
+                handle.close()
+                all_records.extend(records.get('PubmedArticle', []))
+                # Success, break out of retry loop
+                break
+            except IncompleteRead as e:
+                retry += 1
+                print(f"IncompleteRead error, retry {retry}/{max_retries}...")
+                time.sleep(2)  # short delay before retry
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+                break
+        else:
+            print(f"Failed to fetch batch starting at index {start} after {max_retries} retries.")
+    return all_records
+
+# Fetch the article details robustly
+pubmed_articles = fetch_pubmed_records(id_list, batch_size=20)
+
+print(f"Total articles fetched: {len(pubmed_articles)}")
+
+# Extract titles and abstracts
 titles = []
 abstracts = []
+for article in pubmed_articles:
+    art = article['MedlineCitation']['Article']
+    titles.append(art.get('ArticleTitle', 'No Title Found'))
+    if 'Abstract' in art:
+        abstracts.append(" ".join(art['Abstract']['AbstractText']))
+    else:
+        abstracts.append("")
 
-if 'PubmedArticle' in records:
-    for pubmed_article in records['PubmedArticle']:
-        # Append title, with a check in case it's missing
-        if 'ArticleTitle' in pubmed_article['MedlineCitation']['Article']:
-            titles.append(pubmed_article['MedlineCitation']['Article']['ArticleTitle'])
-        else:
-            titles.append("No Title Found")
-            
-        # Append abstract, with a check in case it's missing
-        if 'Abstract' in pubmed_article['MedlineCitation']['Article']:
-            abstract_text = " ".join(pubmed_article['MedlineCitation']['Article']['Abstract']['AbstractText'])
-            abstracts.append(abstract_text)
-        else:
-            abstracts.append("") # Use empty string if no abstract
-
-# Store the raw data in a Pandas DataFrame
-df_raw = pd.DataFrame({
-    'title': titles,
-    'abstract': abstracts
-})
-
-print(f"Successfully fetched {len(df_raw)} articles.")
-print("Raw Data Head:")
+# Create DataFrame from extracted data
+df_raw = pd.DataFrame({'title': titles, 'abstract': abstracts})
+print("Sample raw data:")
 print(df_raw.head())
 print("-" * 50)
 
+print("\nStep 2: Cleaning abstracts with spaCy")
 
-# ==============================================================================
-# Part 2: Data Cleaning
-# Uses the spaCy library to clean the fetched abstracts.
-# ==============================================================================
-import spacy
-import re
-
-print("\nStarting Part 2: Data Cleaning with spaCy...")
-
-# Load the small English model for spaCy
-# Make sure you have run: python -m spacy download en_core_web_sm
+# Load spaCy English model (install with: python -m spacy download en_core_web_sm)
 nlp = spacy.load("en_core_web_sm")
 
+# Function to clean text using spaCy
 def clean_text(text):
-    """
-    Applies a basic NLP pipeline to clean text:
-    - Converts to lowercase
-    - Removes stop words and punctuation
-    - Lemmatizes tokens (reduces words to their root form)
-    """
     if not text:
         return ""
-        
     doc = nlp(text.lower())
-    
-    # Create a list of lemmatized tokens that are not stop words or punctuation
-    clean_tokens = []
-    for token in doc:
-        if not token.is_stop and not token.is_punct and token.is_alpha:
-            clean_tokens.append(token.lemma_)
-            
+    clean_tokens = [token.lemma_ for token in doc if token.is_alpha and not token.is_stop and not token.is_punct]
     return " ".join(clean_tokens)
 
-# Apply the cleaning function to the 'abstract' column of our DataFrame
+# Clean abstracts
 df_raw['cleaned_abstract'] = df_raw['abstract'].apply(clean_text)
 
-print("Cleaning process complete.")
-print("Final DataFrame Head with Cleaned Text:")
+print("Sample cleaned data:")
 print(df_raw[['title', 'cleaned_abstract']].head())
 
-# Optionally, save the final DataFrame to a CSV file
+# Save cleaned data to CSV
 df_raw.to_csv('cleaned_pubmed_data.csv', index=False)
-print("\nFinal data saved to 'cleaned_pubmed_data.csv'")
+print("Data saved to 'cleaned_pubmed_data.csv'.")
