@@ -5,7 +5,7 @@ extracted_texts/
 
 # Ignore Excel/PPT temp & binary files
 *.xlsx
-*.csv
+#*.csv
 *.pptx
 ~$*
 
