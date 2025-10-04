@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, TrendingUp, Users, AlertCircle, Target, Database, Code } from "lucide-react"
+import { FileText, TrendingUp, Users, AlertCircle, Target, Database } from "lucide-react"
 
 const MedicalNLPAnalysis = () => {
   const [activeTab, setActiveTab] = useState("insights")
@@ -636,19 +636,19 @@ def extract_statistics(text):
     stats['populations'] = [{'size': p[0], 'demographic': p[1]} for p in populations]
     
     # Extract confidence intervals
-    ci_pattern = r'(\\d+\\.?\\d*)%\\s*\$$\\s*(?:95%\\s*)?CI[:\\s]*(\\d+\\.?\\d*)-(\\d+\\.?\\d*)\\s*%?\$$'
+    ci_pattern = r'(\\d+\\.?\\d*)%\\s+\$$(?:95%\\s*)?CI[:\\s]*(\\d+\\.?\\d*)-(\\d+\\.?\\d*)\\s*%?\$$'
     cis = re.findall(ci_pattern, text)
     stats['confidence_intervals'] = [{'estimate': float(c[0]), 'lower': float(c[1]), 'upper': float(c[2])} for c in cis]
     
     # Extract prevalence by demographics
-    prev_pattern = r'(\\d+\\.?\\d*)%\\s+(women|men|adults).*?(urban|rural|national)?'
+    prev_pattern = r'(\\d+\\.?\\d*)%\\s+of\\s+(women|men|adults|children)\\s*(?:in\\s+)?(?:(\\w+(?:\\s+\\w+){0,5}))?'
     prevalence = re.findall(prev_pattern, text)
     stats['prevalence_rates'] = [{'rate': float(p[0]), 'group': p[1], 'geography': p[2] or 'total'} for p in prevalence]
     
     return stats
 
 # Example usage
-text = "Urban women show 33.2% obesity prevalence (95% CI: 31.5-34.9%) compared to 19.7% in rural areas"
+text = "Urban women show 33.2% prevalence (95% CI: 31.5-34.9%) compared to 19.7% in rural areas"
 stats = extract_statistics(text)
 print(pd.DataFrame(stats['prevalence_rates']))`,
       libraries: ["re", "pandas"],
@@ -699,7 +699,7 @@ def extract_keywords(documents, top_n=20):
 
 # Example usage
 documents = [
-    "Obesity prevalence in urban India...",
+    "Obesity prevalence data from NFHS-5 survey...",
     "GLP-1 receptor agonists for weight management...",
     "Diabetes and hypertension comorbidities..."
 ]
@@ -1103,17 +1103,7 @@ print(market_df.to_string(index=False))`,
             <Target className="inline mr-2" size={20} />
             Market Opportunities
           </button>
-          <button
-            onClick={() => setActiveTab("methodology")}
-            className={`px-6 py-3 font-medium transition-colors whitespace-nowrap ${
-              activeTab === "methodology"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-gray-500 hover:text-gray-700"
-            }`}
-          >
-            <Code className="inline mr-2" size={20} />
-            NLP Methods & Code
-          </button>
+          {/* Method tab removed as per update */}
         </div>
 
         {/* Key Insights Tab */}
@@ -1473,160 +1463,10 @@ print(market_df.to_string(index=False))`,
           </div>
         )}
 
-        {/* Methodology Tab */}
-        {activeTab === "methodology" && (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-300 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-3">🔬 Complete NLP Analysis Methodology</h3>
-              <p className="text-gray-700 mb-3">
-                This guide provides step-by-step instructions to perform Natural Language Processing on your medical
-                research documents. Each method includes working Python code you can adapt for your specific analysis.
-              </p>
-              <p className="text-sm text-gray-600 italic">
-                All code has been tested and debugged. Copy-paste directly into your Python environment.
-              </p>
-            </div>
-
-            {nlpMethodology.map((method, idx) => (
-              <div key={idx} className="border-2 border-gray-200 rounded-lg p-6 bg-white shadow-md">
-                <div className="mb-4">
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">{method.step}</h4>
-                  <p className="text-gray-600">{method.description}</p>
-                </div>
-
-                <div className="mb-4">
-                  <p className="text-sm font-semibold text-gray-700 mb-2">📋 Key Tasks:</p>
-                  <ul className="space-y-2">
-                    {method.tasks.map((task, tIdx) => (
-                      <li key={tIdx} className="flex items-start text-sm text-gray-700">
-                        <span className="text-blue-500 mr-2 font-bold">→</span>
-                        <span>{task}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mb-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-sm font-semibold text-gray-700">💻 Python Implementation:</p>
-                    <div className="flex gap-2">
-                      {method.libraries.map((lib, lIdx) => (
-                        <span key={lIdx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs font-mono">
-                          {lib}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                  <pre className="text-sm text-green-400 font-mono whitespace-pre-wrap">{method.pythonExample}</pre>
-                </div>
-              </div>
-            ))}
-
-            {/* Installation Guide */}
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 border-2 border-green-300 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-                <Code className="mr-2 text-green-600" size={28} />
-                {installationGuide.title}
-              </h3>
-
-              {installationGuide.steps.map((step, idx) => (
-                <div key={idx} className="mb-6">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">{step.name}</h4>
-                  <div className="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                    <pre className="text-sm text-green-400 font-mono whitespace-pre-wrap">
-                      {step.commands.join("\n")}
-                    </pre>
-                  </div>
-                </div>
-              ))}
-
-              <div className="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-                <p className="text-sm text-gray-700">
-                  <strong>⚠️ Note:</strong> Biomedical NLP models are large (~500MB-1GB). Ensure you have sufficient disk
-                  space and internet bandwidth. First-time setup may take 10-15 minutes.
-                </p>
-              </div>
-
-              <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-                <p className="text-sm text-gray-700">
-                  <strong>💡 Tip:</strong> Use a virtual environment to isolate dependencies:
-                </p>
-                <pre className="mt-2 text-xs bg-gray-900 text-green-400 p-2 rounded font-mono">
-                  python -m venv nlp_env{"\n"}
-                  source nlp_env/bin/activate # On Windows: nlp_env\Scripts\activate{"\n"}
-                  pip install -r requirements.txt
-                </pre>
-              </div>
-            </div>
-
-            {/* Next Steps */}
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-300 rounded-lg p-6">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-4">🚀 Next Steps for Your Analysis</h3>
-              <ol className="space-y-3">
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">1.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Prepare Your Documents</p>
-                    <p className="text-sm text-gray-600">
-                      Convert PDFs/Word docs to plain text. Store in a folder structure by document type.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">2.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Run Preprocessing Pipeline</p>
-                    <p className="text-sm text-gray-600">
-                      Clean text, tokenize, and create a standardized corpus using Step 1 code.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">3.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Extract Entities & Statistics</p>
-                    <p className="text-sm text-gray-600">
-                      Use Steps 2-3 to pull out medical conditions, demographics, and numerical data.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">4.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Analyze Patterns</p>
-                    <p className="text-sm text-gray-600">
-                      Apply sentiment analysis, topic modeling, and relationship extraction (Steps 4-7).
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">5.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Calculate Market Metrics</p>
-                    <p className="text-sm text-gray-600">
-                      Use Step 8 to transform insights into TAM/SAM/SOM and revenue projections.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start">
-                  <span className="font-bold text-orange-600 mr-3">6.</span>
-                  <div>
-                    <p className="font-semibold text-gray-800">Visualize & Report</p>
-                    <p className="text-sm text-gray-600">
-                      Create charts, dashboards, and presentation materials from your structured data.
-                    </p>
-                  </div>
-                </li>
-              </ol>
-            </div>
-          </div>
-        )}
+        {/* Methodology Tab removed as per update */}
       </div>
     </div>
   )
 }
 
-export default MedicalNLPAnalysis
+export { MedicalNLPAnalysis }
