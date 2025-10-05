@@ -1,0 +1,91 @@
+/* ✅ Tailwind v3 Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ✅ Dark mode variant */
+@custom-variant dark (&:is(.dark *));
+
+/* ✅ CSS variables */
+:root {
+  --background: #0b1020;
+  --foreground: #e6eaf2;
+  --card: #0b1020;
+  --card-foreground: #e6eaf2;
+  --popover: #0b1020;
+  --popover-foreground: #e6eaf2;
+  --primary: #06b6d4;
+  --primary-foreground: #07131a;
+  --secondary: #ec4899;
+  --secondary-foreground: #190611;
+  --muted: #111728;
+  --muted-foreground: #c7cfdb;
+  --accent: #ec4899;
+  --accent-foreground: #190611;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: #1b2436;
+  --input: #1b2436;
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.75rem;
+  --sidebar: #0b1020;
+  --sidebar-foreground: #e6eaf2;
+  --sidebar-primary: #06b6d4;
+  --sidebar-primary-foreground: #07131a;
+  --sidebar-accent: #ec4899;
+  --sidebar-accent-foreground: #190611;
+  --sidebar-border: #1b2436;
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: #111728;
+  --foreground: #e6eaf2;
+  --card: #111728;
+  --card-foreground: #e6eaf2;
+  --popover: #111728;
+  --popover-foreground: #e6eaf2;
+  --primary: #ec4899;
+  --primary-foreground: #190611;
+  --secondary: #06b6d4;
+  --secondary-foreground: #07131a;
+  --muted: #1b2436;
+  --muted-foreground: #c7cfdb;
+  --accent: #06b6d4;
+  --accent-foreground: #07131a;
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: #1b2436;
+  --input: #1b2436;
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: #111728;
+  --sidebar-foreground: #e6eaf2;
+  --sidebar-primary: #ec4899;
+  --sidebar-primary-foreground: #190611;
+  --sidebar-accent: #06b6d4;
+  --sidebar-accent-foreground: #07131a;
+  --sidebar-border: #1b2436;
+  --sidebar-ring: oklch(0.439 0 0);
+}
+
+/* ✅ Base styles with safe Tailwind v3 syntax */
+@layer base {
+  * {
+    /* Replaced token classes with arbitrary values */
+    @apply border-[hsl(var(--border))] outline-[hsl(var(--ring)/0.5)];
+  }
+
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+  }
+}
