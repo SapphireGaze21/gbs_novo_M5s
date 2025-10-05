@@ -44,7 +44,7 @@ We used advanced AI to cluster documents and perform semantic searches, uncoveri
 We trained machine learning models to forecast future obesity trends and presented the insights in a dynamic, interactive dashboard.
 * **Tech Stack**: Scikit-learn & TensorFlow (predictive modeling); React & D3.js (interactive dashboard).
 
-## 💡 Key Insights & Commercial Strategy
+##  Key Insights & Commercial Strategy
 
 Our analysis uncovered several key findings that directly inform a targeted commercial strategy for Wegovy.
 
@@ -63,15 +63,14 @@ Our analysis uncovered several key findings that directly inform a targeted comm
 4.  **Launch a Female-Focused Digital Program**: Create a mobile-first (WhatsApp/SMS) support program to bypass the digital access gap for women.
 5.  **Execute a Phased Pilot Launch**: Engage Key Opinion Leaders (KOLs) in 3-5 high-potential states to build advocacy and guide a targeted rollout.
 
-## Getting Started
+##  Getting Started
 
-To get a local copy up and running, follow these simple steps.
+To get a local copy up and running, follow these simple steps. This guide assumes you are setting up the Next.js frontend. The backend service (Python, ML Models) is likely running separately.
 
 ### Prerequisites
 
-* Node.js & npm (for frontend)
-* Python 3.8+ & pip (for backend)
-* MongoDB instance
+* Node.js (v18 or later recommended)
+* npm, yarn, or pnpm
 
 ### Installation
 
@@ -80,24 +79,25 @@ To get a local copy up and running, follow these simple steps.
     git clone [https://github.com/SapphireGaze21/gbs_novo_M5s.git](https://github.com/SapphireGaze21/gbs_novo_M5s.git)
     cd gbs_novo_M5s/novo
     ```
-2.  **Install Frontend Dependencies**
+2.  **Install Dependencies**
+    From the root of the `novo` directory, run:
     ```sh
-    cd frontend
     npm install
     ```
-3.  **Install Backend Dependencies**
+    *(or `yarn install`, `pnpm install`)*
+
+3.  **Set up Environment Variables**
+    Create a file named `.env.local` in the root of the `novo` directory. You will need to add any required environment variables, such as the URL for your backend API.
+    ```
+    NEXT_PUBLIC_API_URL="[http://127.0.0.1:8000/api](http://127.0.0.1:8000/api)"
+    ```
+
+4.  **Run the Development Server**
+    Start the local development server by running:
     ```sh
-    cd ../backend
-    pip install -r requirements.txt
+    npm run dev
     ```
-4.  **Set up Environment Variables**
-    Create a `.env` file in the `backend` directory and add your MongoDB connection string and any other necessary API keys.
-    ```
-    MONGO_URI="your_connection_string"
-    ```
-5.  **Run the application**
-    * Start the backend server: `python app.py`
-    * Start the frontend development server: `npm start`
+    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Project Structure
 
