@@ -4,6 +4,8 @@ This project, developed by **Team 'the m5s'**, presents a data-driven solution t
 
 The platform provides crucial insights into obesity prevalence, patient profiles, and treatment patterns, enabling precise market segmentation, optimized pricing, and accurate demand forecasting for Novo Nordisk.
 
+Check out the dashboard at: https://novo-exploratory-data-analysis.vercel.app
+
 
 ## Table of Contents
 
